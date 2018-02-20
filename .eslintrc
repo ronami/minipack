@@ -1,5 +1,8 @@
 {
-  "extends": "airbnb-base",
+  "extends": ["airbnb-base", "prettier"],
+  "plugins": [
+    "prettier"
+  ],
   "rules": {
     "arrow-body-style": "off",
     "consistent-return": "off",
@@ -15,6 +18,15 @@
     "no-return-assign": "off",
     "no-underscore-dangle": "off",
     "no-unused-expressions": "off",
-    "no-use-before-define": "off"
+    "no-use-before-define": "off",
+    "prettier/prettier": [
+      "error",
+      {
+        "bracketSpacing": false,
+        "printWidth": 80,
+        "singleQuote": true,
+        "trailingComma": "all"
+      }
+    ]
   }
 }
