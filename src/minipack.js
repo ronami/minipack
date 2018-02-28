@@ -1,12 +1,16 @@
 /**
- * Module bundlers bundle many files to be used in a web-browser. Node.js has supported modular
- * programming for a long time. On the web, however, we need tools like module bundlers to support
- * it.
+ * Developing software can be significantly easier if you break your project into smaller separate pieces.
+ * Node.js has supported it for a long time, however, on the web we need tools like Webpack or Rollup to
+ * support it.
  *
- * Our module bundler will processes our application statically: it will start from an entry file,
- * this file is the root of our application. It will recursively build a dependency graph that includes
- * every module our application needs. Finally, it will package all of those modules into just one
- * bundle to be loaded by the browser.
+ * Module bundlers compile small pieces of code into something larger and more complex that can run in a
+ * web-browser. These small pieces are just JavaScript files and dependencies between them are expressed
+ * via a module system (https://webpack.js.org/concepts/modules).
+ *
+ * Our module bundler will processes our application statically: it will start from an entry file, this
+ * file is the root of our application. It will recursively build a dependency graph that includes every
+ * module our application needs. Finally, it will package all of those modules into just one bundle to be
+ * loaded by the browser.
  *
  * This is an ultra-simplified example. Handling cases such as circular dependencies, caching module
  * exports, parsing each module just once and others are skipped to make this example as simple as
