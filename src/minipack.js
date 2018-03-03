@@ -1,7 +1,7 @@
 /**
  * Developing software can be significantly easier if you break your project
  * into smaller separate pieces. Node.js has supported it for a long time,
- * however, on the web we need tools like Webpack or Rollup to support it.
+ * however, on the web, we need tools like Webpack or Rollup to support it.
  *
  * Module bundlers compile small pieces of code into something larger and more
  * complex that can run in a web-browser. These small pieces are just JavaScript
@@ -58,7 +58,7 @@ function createDependencyGraph(filename) {
   // that looks like a call to 'require()'.
   traverse(ast, {
     // ES6 modules are fairly easy because they are static. This means that you
-    // can't import a variable, or conditionaly import another module. Every
+    // can't import a variable, or conditionally import another module. Every
     // time we see an import statement we can just count its value as a
     // dependency.
     ImportDeclaration({node}) {
@@ -170,7 +170,7 @@ module.exports = entry => {
    * and an 'exports' objects. Those variables are not normally available in a
    * browser, so we'll have to implement them.
    *
-   * Our bundle, in essense, will have one self invoking function. Something
+   * Our bundle, in essence, will have one self-invoking function. Something
    * like this:
    *
    * (function() {})()
@@ -217,7 +217,7 @@ module.exports = entry => {
    * Our function will then create an implementation of the require function and
    * require the entry module to fire up the application.
    *
-   * Here's a rough look of it:
+   * Here's a rough look at it:
    *
    * (function(modules) {
    *   function require() { ... }
@@ -243,7 +243,7 @@ module.exports = entry => {
    * Let's give it a go, huh?
    */
 
-  // We start by defining the object to be fed to our self invoking function.
+  // We start by defining the object to be fed to our self-invoking function.
   let modules = '';
 
   // We iterate the graph
@@ -266,7 +266,7 @@ module.exports = entry => {
       {},
     );
 
-    // Every module in the graph will be show up here with its ID as key and an
+    // Every module in the graph will show up here with its ID as the key and an
     // array with the function wrapping our module code and its mappings
     // object.
     modules += `
