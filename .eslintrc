@@ -10,11 +10,13 @@
     "global-require": "off",
     "import/no-dynamic-require": "off",
     "import/prefer-default-export": "off",
-    "no-plusplus": "off",
     "no-confusing-arrow": "off",
     "no-console": "off",
+    "no-loop-func": "off",
     "no-multi-assign": "off",
     "no-param-reassign": "off",
+    "no-plusplus": "off",
+    "no-restricted-syntax": "off",
     "no-return-assign": "off",
     "no-underscore-dangle": "off",
     "no-unused-expressions": "off",
@@ -23,7 +25,7 @@
       "error",
       {
         "bracketSpacing": false,
-        "printWidth": 80,
+        "printWidth": 100,
         "singleQuote": true,
         "trailingComma": "all"
       }

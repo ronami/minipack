@@ -26,22 +26,16 @@ const path = require('path');
 const babylon = require('babylon');
 const traverse = require('babel-traverse').default;
 const {transformFromAst} = require('babel-core');
-const {resolveFrom} = require('./utils');
 
-let id = 0;
+let ID = 0;
 
-/*
- * We start by defining a recursive function to create our dependency graph.
- * This graph will be represented as an object with file's absolute paths as
- * keys and an object with that file's data as its values.
- * 
- * Here's a rough example:
- * {
- *   '/some/folder/file.js': { ... }
- * }
+/**
+ * We start by defining a function to parse a single file in an application.
+ * It should read and analyze the content of the file and extract information
+ * about it.
  */
-function createDependencyGraph(filename) {
-  // We start by reading the file's content as a string.
+function parseAsset(filename) {
+  // We start by reading the content of the file as a string.
   const content = fs.readFileSync(filename, 'utf-8');
 
   // We then parse it with a JavaScript parser (see https://astexplorer.net) to
@@ -50,231 +44,188 @@ function createDependencyGraph(filename) {
     sourceType: 'module',
   });
 
+  // This is the directory this module is in.
+  const dirname = path.dirname(filename);
+
+  // We also assign a unique identifier to this module.
+  const id = ID++;
+
   // This array will hold the relative paths of modules this module depends on.
   const dependencies = [];
 
   // We traverse the AST to try and understand which modules this module depends
-  // on. To do that, we check every import declaration and every function call
-  // that looks like a call to 'require()'.
+  // on. To do that, we check every import declaration in this file's AST.
   traverse(ast, {
     // ES6 modules are fairly easy because they are static. This means that you
     // can't import a variable, or conditionally import another module. Every
     // time we see an import statement we can just count its value as a
     // dependency.
-    ImportDeclaration({node}) {
+    ImportDeclaration: ({node}) => {
       dependencies.push(node.source.value);
     },
-    // Covering require calls is a bit trickier: we go over every function call
-    // in the tree, if the name of the function being called is 'require' and
-    // its only argument is a string then it fits. We then count it in as a
-    // dependency.
-    //
-    // Tools like Webpack can actually handle some pretty rough cases, see:
-    // https://webpack.js.org/guides/dependency-management.
-    CallExpression({node}) {
-      const isRequire =
-        node.callee.name === 'require' &&
-        node.arguments.length === 1 &&
-        node.arguments[0].type === 'StringLiteral';
-
-      if (isRequire) {
-        dependencies.push(node.arguments[0].value);
-      }
-    },
   });
-
-  // We define an object indexed by the file's absolute path with all of the
-  // information we have about our file.
-  const initial = {
-    [filename]: {
-      // We define an id to have a shorter identifier for this file other than
-      // its absolute file path.
-      id: id++,
-      ast,
-      content,
-      // We represent this module's dependencies as an object with relative
-      // paths as keys and absolute paths as values, it will look like this:
-      //
-      // {
-      //   './relative/path/to/dependency': '/absolute/path/to/dependency'
-      // }
-      dependencies: dependencies.reduce((acc, relativeFilename) => {
-        const fullFilename = resolveFrom(
-          path.dirname(filename),
-          relativeFilename,
-        );
-
-        return {
-          ...acc,
-          [relativeFilename]: fullFilename,
-        };
-      }, {}),
-    },
-  };
-
-  // We iterate over all of this module's dependencies and extract their
-  // dependencies recursively, merging all results into one big object which we
-  // return.
-  //
-  // Try printing it to see how our model looks like!
-  return Object.values(initial[filename].dependencies).reduce(
-    (acc, fullFilename) => {
-      const result = createDependencyGraph(fullFilename);
-
-      return {
-        ...acc,
-        ...result,
-      };
-    },
-    initial,
-  );
-}
-
-// This is the main function we export: it takes an entry point and return our
-// bundled application as one big string. That string can later be saved as a
-// JavaScript file.
-module.exports = entry => {
-  // We start by creating our graph. Remember, this is just a flat object with
-  // its keys being absolute file paths and its values are objects with data on
-  // those modules.
-  const graph = createDependencyGraph(entry);
 
   // We use ES6 modules and other JavaScript features that may not be supported
   // on all browsers. To make sure our bundle runs in all browsers we will
-  // transpile it with Babel (see https://babeljs.io)
-  //
-  // We iterate on all of the objects in our graph, transpile their code to ES5
-  // and mutate them by adding a new 'code' property to them. It will hold the
-  // value of their transpiled code as a string.
-  Object.values(graph).forEach(asset => {
-    // We use transformFromAst() instead of the regular transform to save
-    // computing power and make bundling faster.
-    const {code} = transformFromAst(asset.ast, asset.content, {
-      presets: ['es2015'],
+  // transpile it with Babel (see https://babeljs.io).
+  const {code} = transformFromAst(ast, null, {
+    presets: ['env'],
+  });
+
+  // Eventually return all information about this module as a plain object.
+  return {
+    id,
+    dirname,
+    dependencies,
+    code,
+  };
+}
+
+/*
+ * Now that we can parse a single module, we can use that to parse the entire
+ * project.
+ */
+function createGraph(entry) {
+  // We start by parsing the entire file.
+  const mainAsset = parseAsset(entry);
+
+  // We're going to use a queue to parse the dependencies of every asset. To do
+  // that we are defining an array with just the entry asset.
+  const queue = [mainAsset];
+
+  // Whenever we're done with parsing an asset we will push it to this array. It
+  // keeps track of every asset we already finished parsing.
+  const parsedAssets = [];
+
+  // We use a `for ... of` loop to iterate over the queue. Initially the queue only
+  // has one asset but as we iterate it we will push additional assets into the
+  // queue. This loop will terminate when the queue is empty.
+  for (const asset of queue) {
+    // Currently every one of our assets has a list of relative paths to the modules
+    // it dependes on.
+    asset.mapping = {};
+
+    // We iterate over the list of relative paths to its dependencies.
+    asset.dependencies.forEach(relativePath => {
+      // We resolve the relative path based on the directory of the asset into an
+      // absolute path.
+      const absolutePath = require.resolve(path.resolve(asset.dirname, relativePath));
+
+      // We then parse the asset, reading its content and extracting its dependencies.
+      const child = parseAsset(absolutePath);
+
+      // We add a reference to the parent asset by the relative path to the dependency
+      // to the identifier of the newly created asset.
+      asset.mapping[relativePath] = child.id;
+
+      // And we push the child into the queue so its dependencies will also be iterated
+      // and parsed.
+      queue.push(child);
     });
 
-    // We add our result as a new property.
-    asset.code = code;
-  });
+    // Once we're done parsing its depencies, we push it to the list of 'finished' modules.
+    parsedAssets.push(asset);
+  }
 
-  /**
-   * We're done creating our dependency graph and going over it to transpile
-   * each module with Babel. Now we're going to package it all into one bundle.
-   *
-   * That bundle should include each module in our graph within its own scope.
-   * This means, for instance, that defining a variable in one module shouldn't
-   * affect others in the bundle.
-   *
-   * Our transpiled modules use the CommonJS module system: they expect a
-   * function called 'require' to be available globally, along with a 'module'
-   * and an 'exports' objects. Those variables are not normally available in a
-   * browser, so we'll have to implement them.
-   *
-   * Our bundle, in essence, will have one self-invoking function. Something
-   * like this:
-   *
-   * (function() {})()
-   *
-   * I will accept just one argument: an object with data about our modules.
-   * That object will have module IDs as keys and a tuple (an array with two
-   * values) for values.
-   *
-   * Here's is it again:
-   *
-   * (function(modules) {
-   *   ...
-   * })({
-   *   0: [],
-   *   1: [],
-   * })
-   *
-   * The first value in the array will be a function to wrap the code of that
-   * module to create a scope for it. It will also accept a require function, a
-   * module object and an exports object that our module expects to be available
-   * globally.
-   *
-   * Here's another part of the comics:
-   *
-   * (function(modules) {
-   *   ...
-   * })({
-   *   0: [
-   *      function (require, module, exports) {
-   *        const message = require('./message');
-   *        ...
-   *      },
-   *      { './message': 1 },
-   *    ],
-   *   1: [
-   *      function (require, module, exports) {
-   *        const {name} = require('./name');
-   *        ...
-   *      },
-   *      { './name': 2 },
-   *    ],
-   * })
-   *
-   * Our function will then create an implementation of the require function and
-   * require the entry module to fire up the application.
-   *
-   * Here's a rough look at it:
-   *
-   * (function(modules) {
-   *   function require() { ... }
-   *
-   *   require(0);
-   * })({
-   *   0: [
-   *      function (require, module, exports) {
-   *        const message = require('./message');
-   *        ...
-   *      },
-   *      { './message': 1 },
-   *   ],
-   *   1: [
-   *      function (require, module, exports) {
-   *        const {name} = require('./name');
-   *        ...
-   *      },
-   *      { './name': 2 },
-   *   ],
-   * })
-   *
-   * Let's give it a go, huh?
-   */
+  // Return the list of modules.
+  return parsedAssets;
+}
 
-  // We start by defining the object to be fed to our self-invoking function.
-  let modules = '';
-
-  // We iterate the graph
-  Object.values(graph).forEach(mod => {
-    // The second value in the array is a mapping object. It will have relative
-    // paths of every module this module depends on as keys and its absolute ID
-    // as a value.
-    //
-    // We'll need this soon when we implement the 'require' function to resolve
-    // relative with absolute module IDs.
-    const mapping = Object.keys(mod.dependencies).reduce(
-      (acc, relativeFilename) => {
-        const fullFilename = mod.dependencies[relativeFilename];
-
-        return {
-          ...acc,
-          [relativeFilename]: graph[fullFilename].id,
-        };
-      },
-      {},
-    );
-
-    // Every module in the graph will show up here with its ID as the key and an
-    // array with the function wrapping our module code and its mappings
-    // object.
-    modules += `
-      ${mod.id}: [
-        function (require, module, exports) { ${mod.code} },
-        ${JSON.stringify(mapping)}
-      ],`;
-  });
+/**
+ * Now we're defining a function that will take our list of modules and package
+ * them into one bundle.
+ *
+ * Our bundle should include each module in our graph within its own scope.
+ * This means, for instance, that defining a variable in one module shouldn't
+ * affect others in the bundle.
+ *
+ * Our transpiled modules use the CommonJS module system: they expect a
+ * function called 'require' to be available globally, along with a 'module'
+ * and an 'exports' objects. Those variables are not normally available in a
+ * browser, so we'll have to implement them.
+ *
+ * Our bundle, in essence, will have one self-invoking function. Something
+ * like this:
+ *
+ * (function() {})()
+ *
+ * I will accept just one argument: an object with data about our modules.
+ * That object will have module IDs as keys and a tuple (an array with two
+ * values) for values.
+ *
+ * Here's is it again:
+ *
+ * (function(modules) {
+ *   ...
+ * })({
+ *   0: [],
+ *   1: [],
+ * })
+ *
+ * The first value in the array will be a function to wrap the code of that
+ * module to create a scope for it. It will also accept a require function, a
+ * module object and an exports object that our module expects to be available
+ * globally.
+ *
+ * Here's another part of the comics:
+ *
+ * (function(modules) {
+ *   ...
+ * })({
+ *   0: [
+ *      function (require, module, exports) {
+ *        const message = require('./message');
+ *        ...
+ *      },
+ *      { './message': 1 },
+ *    ],
+ *   1: [
+ *      function (require, module, exports) {
+ *        const {name} = require('./name');
+ *        ...
+ *      },
+ *      { './name': 2 },
+ *    ],
+ * })
+ *
+ * Our function will then create an implementation of the require function and
+ * require the entry module to fire up the application.
+ *
+ * Here's a rough look at it:
+ *
+ * (function(modules) {
+ *   function require() { ... }
+ *
+ *   require(0);
+ * })({
+ *   0: [
+ *      function (require, module, exports) {
+ *        const message = require('./message');
+ *        ...
+ *      },
+ *      { './message': 1 },
+ *   ],
+ *   1: [
+ *      function (require, module, exports) {
+ *        const {name} = require('./name');
+ *        ...
+ *      },
+ *      { './name': 2 },
+ *   ],
+ * })
+ *
+ * Let's give it a go, huh?
+ */
+function bundle(parsedAssets) {
+  // Every module in the graph will show up here with its ID as the key and an
+  // array with the function wrapping our module code and its mappings
+  // object.
+  const modules = parsedAssets.reduce((acc, mod) => {
+    return `${acc}${mod.id}: [
+      function (require, module, exports) { ${mod.code} },
+      ${JSON.stringify(mod.mapping)},
+    ],`;
+  }, '');
 
   /**
    * Time to create a simple implementation of the require function: it accepts
@@ -289,26 +240,31 @@ module.exports = entry => {
    * own localRequire, along with a module.exports object for it to mutate and
    * then return it.
    */
-  const bundle = `
+  const result = `
     (function(modules) {
       function require(id) {
-        const [module, mapping] = modules[id];
+        const [fn, mapping] = modules[id];
 
         function localRequire(name) {
           return require(mapping[name]);
         }
 
-        const localModule = { exports: {} };
+        const module = { exports : {} };
 
-        module(localRequire, localModule, localModule.exports);
+        fn(localRequire, module, module.exports);
 
-        return localModule.exports;
+        return module.exports;
       }
 
       require(0);
     })({${modules}})
   `;
 
-  // We simply return the result, hurray! you made it! :)
-  return bundle;
-};
+  // We simply return the result, hurray! :)
+  return result;
+}
+
+const graph = createGraph('/Users/ronena/Projects/minipack/example/entry.js');
+const result = bundle(graph);
+
+console.log(result);
