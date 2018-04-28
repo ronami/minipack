@@ -1,6 +1,6 @@
 ## 🚀 Minipack
 
-> An simplified example of a modern module bundler written in JavaScript
+> A simplified example of a modern module bundler written in JavaScript
 
 ### What's in it for me?
 
