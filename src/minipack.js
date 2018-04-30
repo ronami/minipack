@@ -44,9 +44,6 @@ function parseAsset(filename) {
     sourceType: 'module',
   });
 
-  // This is the directory this module is in.
-  const dirname = path.dirname(filename);
-
   // We also assign a unique identifier to this module.
   const id = ID++;
 
@@ -75,7 +72,7 @@ function parseAsset(filename) {
   // Eventually return all information about this module as a plain object.
   return {
     id,
-    dirname,
+    filename,
     dependencies,
     code,
   };
@@ -93,9 +90,9 @@ function createGraph(entry) {
   // that we are defining an array with just the entry asset.
   const queue = [mainAsset];
 
-  // Whenever we're done with parsing an asset we will push it to this array. It
-  // keeps track of every asset we already finished parsing.
-  const parsedAssets = [];
+  // Whenever we're done processing an asset we will push it to this array. It
+  // keeps track of every asset we already finished processing.
+  const processedAssets = [];
 
   // We use a `for ... of` loop to iterate over the queue. Initially the queue only
   // has one asset but as we iterate it we will push additional assets into the
@@ -105,11 +102,14 @@ function createGraph(entry) {
     // it dependes on.
     asset.mapping = {};
 
+    // This is the directory this module is in.
+    const dirname = path.dirname(asset.filename);
+
     // We iterate over the list of relative paths to its dependencies.
     asset.dependencies.forEach(relativePath => {
       // We resolve the relative path based on the directory of the asset into an
       // absolute path.
-      const absolutePath = require.resolve(path.resolve(asset.dirname, relativePath));
+      const absolutePath = path.join(dirname, relativePath);
 
       // We then parse the asset, reading its content and extracting its dependencies.
       const child = parseAsset(absolutePath);
@@ -124,11 +124,11 @@ function createGraph(entry) {
     });
 
     // Once we're done parsing its depencies, we push it to the list of 'finished' modules.
-    parsedAssets.push(asset);
+    processedAssets.push(asset);
   }
 
   // Return the list of modules.
-  return parsedAssets;
+  return processedAssets;
 }
 
 /**
@@ -216,11 +216,11 @@ function createGraph(entry) {
  *
  * Let's give it a go, huh?
  */
-function bundle(parsedAssets) {
+function bundle(processedAssets) {
   // Every module in the graph will show up here with its ID as the key and an
   // array with the function wrapping our module code and its mappings
   // object.
-  const modules = parsedAssets.reduce((acc, mod) => {
+  const modules = processedAssets.reduce((acc, mod) => {
     return `${acc}${mod.id}: [
       function (require, module, exports) { ${mod.code} },
       ${JSON.stringify(mod.mapping)},

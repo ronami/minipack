@@ -8,6 +8,7 @@
     "consistent-return": "off",
     "class-methods-use-this": "off",
     "global-require": "off",
+    "import/extensions": "off",
     "import/no-dynamic-require": "off",
     "import/prefer-default-export": "off",
     "no-confusing-arrow": "off",
