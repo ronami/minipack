@@ -21,7 +21,7 @@ $ npm install
 And then run our script:
 
 ```sh
-$ node run.js
+$ node src/minipack.js
 ```
 
 ### Awesome, where do I start?
