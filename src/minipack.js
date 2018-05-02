@@ -90,10 +90,6 @@ function createGraph(entry) {
   // that we are defining an array with just the entry asset.
   const queue = [mainAsset];
 
-  // Whenever we're done processing an asset we will push it to this array. It
-  // keeps track of every asset we already finished processing.
-  const processedAssets = [];
-
   // We use a `for ... of` loop to iterate over the queue. Initially the queue only
   // has one asset but as we iterate it we will push additional assets into the
   // queue. This loop will terminate when the queue is empty.
@@ -122,13 +118,10 @@ function createGraph(entry) {
       // and parsed.
       queue.push(child);
     });
-
-    // Once we're done parsing its depencies, we push it to the list of 'finished' modules.
-    processedAssets.push(asset);
   }
 
   // Return the list of modules.
-  return processedAssets;
+  return queue;
 }
 
 /**
@@ -216,11 +209,11 @@ function createGraph(entry) {
  *
  * Let's give it a go, huh?
  */
-function bundle(processedAssets) {
+function bundle(graph) {
   // Every module in the graph will show up here with its ID as the key and an
   // array with the function wrapping our module code and its mappings
   // object.
-  const modules = processedAssets.reduce((acc, mod) => {
+  const modules = graph.reduce((acc, mod) => {
     return `${acc}${mod.id}: [
       function (require, module, exports) { ${mod.code} },
       ${JSON.stringify(mod.mapping)},
@@ -264,7 +257,7 @@ function bundle(processedAssets) {
   return result;
 }
 
-const graph = createGraph('/Users/ronena/Projects/minipack/example/entry.js');
+const graph = createGraph('./example/entry.js');
 const result = bundle(graph);
 
 console.log(result);
