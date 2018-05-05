@@ -34,7 +34,7 @@ let ID = 0;
  * It should read and analyze the content of the file and extract information
  * about it.
  */
-function parseAsset(filename) {
+function createAsset(filename) {
   // We start by reading the content of the file as a string.
   const content = fs.readFileSync(filename, 'utf-8');
 
@@ -84,7 +84,7 @@ function parseAsset(filename) {
  */
 function createGraph(entry) {
   // We start by parsing the entire file.
-  const mainAsset = parseAsset(entry);
+  const mainAsset = createAsset(entry);
 
   // We're going to use a queue to parse the dependencies of every asset. To do
   // that we are defining an array with just the entry asset.
@@ -108,7 +108,7 @@ function createGraph(entry) {
       const absolutePath = path.join(dirname, relativePath);
 
       // We then parse the asset, reading its content and extracting its dependencies.
-      const child = parseAsset(absolutePath);
+      const child = createAsset(absolutePath);
 
       // We add a reference to the parent asset by the relative path to the dependency
       // to the identifier of the newly created asset.
