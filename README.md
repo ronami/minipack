@@ -1,16 +1,16 @@
-## 🚀 Minipack
+## 📦 Minipack
 
 > A simplified example of a modern module bundler written in JavaScript
 
-### What's in it for me?
+### Introduction
 
-Most of us don't have to think too much about module bundlers in our day jobs. However, module bundlers are all around us, and if you're a web developer you are probably using module bundlers on a daily basis.
+As front-end developers we spend a lot of time working with tools like [Webpack](https://github.com/webpack/webpack) or [Browserify](https://github.com/browserify/browserify).
 
-Having a good understanding of how popular tools like [Webpack](https://github.com/webpack/webpack) or [Browserify](https://github.com/browserify/browserify) work is extremely helpful.
+Understanding how those tools work internally can help us make better decisions on how we write our code.
 
-The purpose of this example is to help you understand how *most* module bundlers work, and that they're not as scary as you might think.
+The purpose of this project is to explain how most bundlers work. It contains a short implementation of a simplified but still reasonably accurate bundler. Along with the code there are comments explaining what the code is trying to achieve.
 
-### Development
+### Try running the code
 
 Start by installing dependencies:
 
@@ -24,7 +24,7 @@ And then run our script:
 $ node src/minipack.js
 ```
 
-### Awesome, where do I start?
+### Cool, where do I start?
 
 Head on to the source code: [src/minipack.js](src/minipack.js).
 
@@ -32,6 +32,6 @@ Head on to the source code: [src/minipack.js](src/minipack.js).
 
 - [AST Explorer](https://astexplorer.net/)
 - [Babel REPL](https://babeljs.io/repl/)
-- [Babylon](https://github.com/babel/babel/tree/master/packages/babylon)
+- [Babylon](https://github.com/babel/babel/tree/master/packages/babel-parser)
 - [Babel Plugin Handbook](https://github.com/thejameskyle/babel-handbook/blob/master/translations/en/plugin-handbook.md)
 - [Webpack: dependency managment](https://webpack.js.org/guides/dependency-management)
