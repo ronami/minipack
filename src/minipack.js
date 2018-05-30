@@ -104,7 +104,7 @@ function createAsset(filename) {
 // in the application and how they depend on one another. This understanding of
 // a project is called the dependency graph.
 function createGraph(entry) {
-  // Start by parsing the entire file.
+  // Start by parsing the entry file.
   const mainAsset = createAsset(entry);
 
   // We're going to use a queue to parse the dependencies of every asset. To do
