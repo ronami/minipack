@@ -67,7 +67,7 @@ function createAsset(filename) {
     // Every time we see an import statement we can just count its value as a
     // dependency.
     ImportDeclaration: ({node}) => {
-      // We push into the dependencies array the value that we import.
+      // We push the value that we import into the dependencies array.
       dependencies.push(node.source.value);
     },
   });
@@ -82,7 +82,7 @@ function createAsset(filename) {
   //
   // The `presets` option is a set of rules that tell Babel how to transpile our
   // code. We use `babel-preset-env` to transpile our code to something that
-  // most browser can run.
+  // most browsers can run.
   const {code} = transformFromAst(ast, null, {
     presets: ['env'],
   });
@@ -136,7 +136,7 @@ function createGraph(entry) {
       // Parse the asset, read its content, and extract its dependencies.
       const child = createAsset(absolutePath);
 
-      // It's essential for us to know that that `asset` depends on `child`. We
+      // It's essential for us to know that the `asset` we are analyzing depends on `child`. We
       // express that relationship by adding a new property to the `mapping`
       // object with the id of the child.
       asset.mapping[relativePath] = child.id;
@@ -160,12 +160,12 @@ function createGraph(entry) {
 // (function() {})()
 //
 // That function will receive just one parameter: An object with information
-// about every one of the modules in our graph.
+// about every module in our graph.
 function bundle(graph) {
   let modules = '';
 
   // Before we get to the body of that function, we'll construct the object that
-  // we'll feed it. Please note that this string that we're building gets
+  // we'll pass to it as a parameter. Please note that this string that we're building gets
   // wrapped by two curly braces ({}) so for every module, we add a string of
   // this format: `key: value,`.
   graph.forEach(mod => {
@@ -201,7 +201,7 @@ function bundle(graph) {
   // We start by creating a `require()` function: It accepts a module id and
   // looks for it in the `modules` object we constructed previously. We
   // destructure over the two-value array to get our function wrapper and the
-  // mappings object.
+  // mapping object.
   //
   // The code of our modules has calls to `require()` with relative file paths
   // instead of module ids. Our require function expects module ids. Also, two
@@ -209,13 +209,13 @@ function bundle(graph) {
   // modules.
   //
   // To handle that, when a module is required we create a new, dedicated
-  // `require` function for it to use. It will be specific to it and will know
+  // `require` function for it to use. It will be specific to the module and will know
   // to turn its relative paths into ids by using the module's mapping object.
-  // The mapping is exactly that, a mapping between relative paths and module ids
+  // The mapping object is exactly that, a mapping between relative paths and module ids
   // for that specific module.
   //
   // Lastly, with CommonJs, when a module is required, it can expose values by
-  // mutating its `exports` object. The exports object, after it has been
+  // mutating its `exports` object. The `exports` object, after it has been
   // changed by the module's code, is returned from the `require()` function.
   const result = `
     (function(modules) {
