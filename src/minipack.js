@@ -80,9 +80,9 @@ function createAsset(filename) {
   // supported on all browsers. To make sure our bundle runs in all browsers we
   // will transpile it with Babel (see https://babeljs.io).
   //
-  // The `presets` option is a set of rules that tell Babel how to transpile our
-  // code. We use `babel-preset-env` to transpile our code to something that
-  // most browsers can run.
+  // The `presets` option is a set of rules that tell Babel how to transpile
+  // our code. We use `babel-preset-env` to transpile our code to something
+  // that most browsers can run.
   const {code} = transformFromAst(ast, null, {
     presets: ['env'],
   });
@@ -165,9 +165,9 @@ function bundle(graph) {
   let modules = '';
 
   // Before we get to the body of that function, we'll construct the object that
-  // we'll pass to it as a parameter. Please note that this string that we're building gets
-  // wrapped by two curly braces ({}) so for every module, we add a string of
-  // this format: `key: value,`.
+  // we'll pass to it as a parameter. Please note that this string that we're
+  // building gets wrapped by two curly braces ({}) so for every module, we add
+  // a string of this format: `key: value,`.
   graph.forEach(mod => {
     // Every module in the graph has an entry in this object. We use the
     // module's id as the key and an array for the value (we have 2 values for
@@ -209,10 +209,10 @@ function bundle(graph) {
   // modules.
   //
   // To handle that, when a module is required we create a new, dedicated
-  // `require` function for it to use. It will be specific to the module and will know
-  // to turn its relative paths into ids by using the module's mapping object.
-  // The mapping object is exactly that, a mapping between relative paths and module ids
-  // for that specific module.
+  // `require` function for it to use. It will be specific to the module and
+  // will know to turn its relative paths into ids by using the module's
+  // mapping object. The mapping object is exactly that, a mapping between
+  // relative paths and module ids for that specific module.
   //
   // Lastly, with CommonJs, when a module is required, it can expose values by
   // mutating its `exports` object. The `exports` object, after it has been
