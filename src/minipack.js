@@ -136,7 +136,7 @@ function createGraph(entry) {
       // Parse the asset, read its content, and extract its dependencies.
       const child = createAsset(absolutePath);
 
-      // It's essential for us to know that the `asset` we are analyzing depends on `child`. We
+      // It's essential for us to know that `asset` depends on `child`. We
       // express that relationship by adding a new property to the `mapping`
       // object with the id of the child.
       asset.mapping[relativePath] = child.id;
