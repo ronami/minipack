@@ -10,6 +10,10 @@ Understanding how those tools work can help us make better decisions on how we w
 
 The purpose of this project is to explain how most bundlers work under the hood. It contains a short implementation of a simplified but still reasonably accurate bundler. Along with the code, there are comments explaining what the code is trying to achieve.
 
+### Cool, where do I start?
+
+Head on to the source code: [src/minipack.js](src/minipack.js).
+
 ### Try running the code
 
 Start by installing dependencies:
@@ -23,10 +27,6 @@ And then run our script:
 ```sh
 $ node src/minipack.js
 ```
-
-### Cool, where do I start?
-
-Head on to the source code: [src/minipack.js](src/minipack.js).
 
 ### Additional links
 

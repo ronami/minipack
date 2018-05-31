@@ -1,4 +1,4 @@
-/*
+/**
  * Module bundlers compile small pieces of code into something larger and more
  * complex that can run in a web browser. These small pieces are just JavaScript
  * files, and dependencies between them are expressed by a module system
@@ -209,7 +209,7 @@ function bundle(graph) {
   // modules.
   //
   // To handle that, when a module is required we create a new, dedicated
-  // `require` function for it to use. It will be specific to the module and
+  // `require` function for it to use. It will be specific to that module and
   // will know to turn its relative paths into ids by using the module's
   // mapping object. The mapping object is exactly that, a mapping between
   // relative paths and module ids for that specific module.
