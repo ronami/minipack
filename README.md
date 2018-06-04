@@ -14,9 +14,9 @@ The purpose of this project is to explain how most bundlers work under the hood.
 
 Head on to the source code: [src/minipack.js](src/minipack.js).
 
-|Other Language|
-|---|
-|[中文](https://github.com/chinanf-boy/minipack-explain)|
+### Translations
+
+- [中文](https://github.com/chinanf-boy/minipack-explain) by [chinanf-boy](https://github.com/chinanf-boy)
 
 ### Try running the code
 
