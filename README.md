@@ -34,7 +34,7 @@ $ node src/minipack.js
 - [Babel REPL](https://babeljs.io/repl)
 - [Babylon](https://github.com/babel/babel/tree/master/packages/babel-parser)
 - [Babel Plugin Handbook](https://github.com/thejameskyle/babel-handbook/blob/master/translations/en/plugin-handbook.md)
-- [Webpack: dependency managment](https://webpack.js.org/guides/dependency-management)
+- [Webpack: Modules](https://webpack.js.org/concepts/modules)
 
 ### Read this in other languages
 
