@@ -14,10 +14,6 @@ The purpose of this project is to explain how most bundlers work under the hood.
 
 Head on to the source code: [src/minipack.js](src/minipack.js).
 
-### Translations
-
-- [中文](https://github.com/chinanf-boy/minipack-explain) by [chinanf-boy](https://github.com/chinanf-boy)
-
 ### Try running the code
 
 Start by installing dependencies:
@@ -39,3 +35,7 @@ $ node src/minipack.js
 - [Babylon](https://github.com/babel/babel/tree/master/packages/babel-parser)
 - [Babel Plugin Handbook](https://github.com/thejameskyle/babel-handbook/blob/master/translations/en/plugin-handbook.md)
 - [Webpack: dependency managment](https://webpack.js.org/guides/dependency-management)
+
+### Read this in other languages
+
+- [中文](https://github.com/chinanf-boy/minipack-explain)
