@@ -191,7 +191,9 @@ function bundle(graph) {
     // be able to know which module in the graph corresponds to that relative
     // path for this module.
     modules += `${mod.id}: [
-      function (require, module, exports) { ${mod.code} },
+      function (require, module, exports) {
+        ${mod.code}
+      },
       ${JSON.stringify(mod.mapping)},
     ],`;
   });
