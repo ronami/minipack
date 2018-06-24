@@ -37,5 +37,6 @@ $ node src/minipack.js
 - [Webpack: Modules](https://webpack.js.org/concepts/modules)
 
 ### Read this in other languages
+
 - [한글/Korean](https://github.com/hg-pyun/minipack-kr)
 - [中文](https://github.com/chinanf-boy/minipack-explain)
