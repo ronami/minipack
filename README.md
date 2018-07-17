@@ -39,4 +39,4 @@ $ node src/minipack.js
 ### Read this in other languages
 
 - [한글/Korean](https://github.com/hg-pyun/minipack-kr)
-- [中文](https://github.com/chinanf-boy/minipack-explain)
+- [中文/Chinese](https://github.com/chinanf-boy/minipack-explain)
