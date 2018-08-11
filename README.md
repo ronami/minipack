@@ -40,3 +40,4 @@ $ node src/minipack.js
 
 - [한글/Korean](https://github.com/hg-pyun/minipack-kr)
 - [中文/Chinese](https://github.com/chinanf-boy/minipack-explain)
+- [Русский/Russian](https://github.com/makewebme/build-your-own-webpack)
