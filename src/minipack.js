@@ -131,7 +131,7 @@ function createGraph(entry) {
       // relative to the file that imported them. We can turn the relative path
       // into an absolute one by joining it with the path to the directory of
       // the parent asset.
-      const absolutePath = path.join(dirname, relativePath);
+      const absolutePath = path.join(dirname, `${relativePath}.js`);
 
       // Parse the asset, read its content, and extract its dependencies.
       const child = createAsset(absolutePath);
