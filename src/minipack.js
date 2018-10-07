@@ -132,18 +132,23 @@ function createGraph(entry) {
       // into an absolute one by joining it with the path to the directory of
       // the parent asset.
       const absolutePath = path.join(dirname, relativePath);
+      
+      // Check if dependency is already added as asset in the queue and skip create process.
+      let child = queue.find(asset => asset.filename === absolutePath);
 
-      // Parse the asset, read its content, and extract its dependencies.
-      const child = createAsset(absolutePath);
+      if (!child) {
+        // Parse the asset, read its content, and extract its dependencies.
+        child = createAsset(absolutePath);
+
+        // We push the child asset into the queue so its dependencies
+        // will also be iterated over and parsed.
+        queue.push(child);
+      }
 
       // It's essential for us to know that `asset` depends on `child`. We
       // express that relationship by adding a new property to the `mapping`
       // object with the id of the child.
       asset.mapping[relativePath] = child.id;
-
-      // Finally, we push the child asset into the queue so its dependencies
-      // will also be iterated over and parsed.
-      queue.push(child);
     });
   }
 
