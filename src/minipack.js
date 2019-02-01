@@ -90,7 +90,7 @@ function createAsset(filename) {
   // Return all information about this module.
   return {
     id,
-    filename,
+    filePath,
     dependencies,
     code,
   };
@@ -122,7 +122,7 @@ function createGraph(entry) {
     asset.mapping = {};
 
     // This is the directory this module is in.
-    const dirname = path.dirname(asset.filename);
+    const dirname = path.dirname(asset.filePath);
 
     // We iterate over the list of relative paths to its dependencies.
     asset.dependencies.forEach(relativePath => {
