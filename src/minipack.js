@@ -36,7 +36,7 @@ let ID = 0;
 
 // We start by creating a function that will accept a path to a file, read
 // its contents, and extract its dependencies.
-function createAsset(filename) {
+function createAsset(filePath) {
   // Read the content of the file as a string.
   const content = fs.readFileSync(filename, 'utf-8');
 
