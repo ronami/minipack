@@ -4,7 +4,7 @@
 
 ### Introduction
 
-As front-end developers, we spend a lot of time working with tools like [Webpack](https://github.com/webpack/webpack), [Browserify](https://github.com/browserify/browserify), and [Parcel](https://github.com/parcel-bundler/parcel).
+As front-end developers, we spend a lot of time working with tools like [webpack](https://github.com/webpack/webpack), [Browserify](https://github.com/browserify/browserify), and [Parcel](https://github.com/parcel-bundler/parcel).
 
 Understanding how those tools work can help us make better decisions on how we write our code. By understanding how our code turns into a bundle and how that bundle looks like we can also debug it better.
 
@@ -34,7 +34,7 @@ $ node src/minipack.js
 - [Babel REPL](https://babeljs.io/repl)
 - [Babylon](https://github.com/babel/babel/tree/master/packages/babel-parser)
 - [Babel Plugin Handbook](https://github.com/thejameskyle/babel-handbook/blob/master/translations/en/plugin-handbook.md)
-- [Webpack: Modules](https://webpack.js.org/concepts/modules)
+- [webpack: Modules](https://webpack.js.org/concepts/modules)
 
 ### Read this in other languages
 
