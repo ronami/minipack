@@ -38,6 +38,7 @@ $ node src/minipack.js
 
 ### Read this in other languages
 
+- [日本語/Japanese](https://github.com/morinokami/minipack-ja)
 - [한글/Korean](https://github.com/hg-pyun/minipack-kr)
 - [中文/Chinese](https://github.com/chinanf-boy/minipack-explain)
 - [Русский/Russian](https://github.com/makewebme/build-your-own-webpack)
